@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1018267860395",
+    "project_id": "felicitup-dac93",
+    "storage_bucket": "felicitup-dac93.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1018267860395:android:76906eb376a0908d6926ee",
+        "android_client_info": {
+          "package_name": "com.felicitup.felicitup"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCThhBrkntO-Fv6rwQgAETJ_0oekwyy05w"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
