@@ -8,11 +8,13 @@ class AppRegularButton extends StatelessWidget {
     required this.label,
     required this.isActive,
     this.icon,
+    required this.isLoading,
   });
 
   final VoidCallback onTap;
   final String label;
   final bool isActive;
+  final bool isLoading;
   final IconData? icon;
 
   @override
@@ -23,32 +25,41 @@ class AppRegularButton extends StatelessWidget {
         height: size.height(context, .06),
         alignment: Alignment.center,
         decoration: BoxDecoration(
-          color: isActive ? AppColors.primary : AppColors.primary.withOpacity(.6),
+          color:
+              isActive ? AppColors.primary : AppColors.primary.withOpacity(.6),
           borderRadius: size.borderRadius(context, .02),
         ),
-        child: icon == null
-            ? Text(
-                label,
-                style: AppStyles.bodyL.copyWith(
-                  color: isActive ? Colors.white : Colors.white.withOpacity(.3),
-                ),
+        child: isLoading
+            ? const CircularProgressIndicator(
+                color: Colors.white,
               )
-            : Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(
-                    icon,
-                    color: Colors.white,
-                  ),
-                  SizedBox(width: size.width(context, .03)),
-                  Text(
+            : icon == null
+                ? Text(
                     label,
                     style: AppStyles.bodyL.copyWith(
-                      color: isActive ? Colors.white : Colors.white.withOpacity(.3),
+                      color: isActive
+                          ? Colors.white
+                          : Colors.white.withOpacity(.3),
                     ),
+                  )
+                : Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(
+                        icon,
+                        color: Colors.white,
+                      ),
+                      SizedBox(width: size.width(context, .03)),
+                      Text(
+                        label,
+                        style: AppStyles.bodyL.copyWith(
+                          color: isActive
+                              ? Colors.white
+                              : Colors.white.withOpacity(.3),
+                        ),
+                      ),
+                    ],
                   ),
-                ],
-              ),
       ),
     );
   }
@@ -74,7 +85,8 @@ class AppSmallButton extends StatelessWidget {
         height: size.height(context, .05),
         alignment: Alignment.center,
         decoration: BoxDecoration(
-          color: isActive ? AppColors.primary : AppColors.primary.withOpacity(.6),
+          color:
+              isActive ? AppColors.primary : AppColors.primary.withOpacity(.6),
           borderRadius: size.borderRadius(context, .1),
         ),
         child: Text(

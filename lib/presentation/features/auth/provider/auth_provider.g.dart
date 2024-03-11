@@ -11,6 +11,8 @@ _$AuthFeatureModelImpl _$$AuthFeatureModelImplFromJson(
     _$AuthFeatureModelImpl(
       isObscure: json['isObscure'] as bool,
       isRepObscure: json['isRepObscure'] as bool,
+      checkTerms: json['checkTerms'] as bool,
+      isLoading: json['isLoading'] as bool,
       birthDate: json['birthDate'] as String,
     );
 
@@ -19,5 +21,7 @@ Map<String, dynamic> _$$AuthFeatureModelImplToJson(
     <String, dynamic>{
       'isObscure': instance.isObscure,
       'isRepObscure': instance.isRepObscure,
+      'checkTerms': instance.checkTerms,
+      'isLoading': instance.isLoading,
       'birthDate': instance.birthDate,
     };

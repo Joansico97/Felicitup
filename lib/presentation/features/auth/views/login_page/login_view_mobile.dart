@@ -49,9 +49,10 @@ class LoginViewMobile extends StatelessWidget {
                       ),
                       SizedBox(height: size.height(context, .02)),
                       AppRegularButton(
-                        onTap: () => Log().debug('Hola mundo'),
+                        onTap: () => notifier.login(),
                         label: 'Entrar',
                         isActive: true,
+                        isLoading: state.isLoading,
                       ),
                     ],
                   ),
@@ -65,7 +66,9 @@ class LoginViewMobile extends StatelessWidget {
                       style: AppStyles.bodyS,
                     ),
                     GestureDetector(
-                      onTap: () => ref.read(routerProvider).pushNamed(RouterPaths.register),
+                      onTap: () => ref
+                          .read(routerProvider)
+                          .pushNamed(RouterPaths.register),
                       child: Text(
                         'Registrate',
                         style: AppStyles.bodyS.copyWith(
@@ -100,19 +103,21 @@ class LoginViewMobile extends StatelessWidget {
                 ),
                 SizedBox(height: size.height(context, .05)),
                 AppRegularButton(
-                  onTap: () {},
+                  onTap: () => Log().debug('Google'),
                   label: 'Entrar con Google',
                   isActive: true,
                   icon: PhosphorIconsRegular.googleLogo,
+                  isLoading: false,
                 ),
                 SizedBox(height: size.height(context, .02)),
                 Visibility(
                   visible: Platform.isIOS,
                   child: AppRegularButton(
-                    onTap: () {},
+                    onTap: () => Log().debug('Apple'),
                     label: 'Entrar con Apple',
                     isActive: true,
                     icon: PhosphorIconsRegular.appleLogo,
+                    isLoading: false,
                   ),
                 ),
               ],

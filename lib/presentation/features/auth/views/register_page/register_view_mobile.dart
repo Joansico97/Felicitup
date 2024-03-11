@@ -85,9 +85,13 @@ class RegisterViewMobile extends StatelessWidget {
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               Text(
-                                state.birthDate == '' ? 'Fecha Nacimiento' : state.birthDate,
+                                state.birthDate == ''
+                                    ? 'Fecha Nacimiento'
+                                    : state.birthDate,
                                 style: AppStyles.bodyL.copyWith(
-                                  color: state.birthDate == '' ? AppColors.lightGrey : AppColors.text,
+                                  color: state.birthDate == ''
+                                      ? AppColors.lightGrey
+                                      : AppColors.text,
                                 ),
                               ),
                               const Icon(

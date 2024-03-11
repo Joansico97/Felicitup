@@ -19,10 +19,13 @@ class AuthFeatureModel with _$AuthFeatureModel {
   const factory AuthFeatureModel({
     required bool isObscure,
     required bool isRepObscure,
+    required bool checkTerms,
+    required bool isLoading,
     required String birthDate,
   }) = _AuthFeatureModel;
 
-  factory AuthFeatureModel.fromJson(Map<String, dynamic> json) => _$AuthFeatureModelFromJson(json);
+  factory AuthFeatureModel.fromJson(Map<String, dynamic> json) =>
+      _$AuthFeatureModelFromJson(json);
 }
 
 class AuthFeatureEvents extends StateNotifier<AuthFeatureModel> {
@@ -31,6 +34,8 @@ class AuthFeatureEvents extends StateNotifier<AuthFeatureModel> {
           const AuthFeatureModel(
             isObscure: true,
             isRepObscure: true,
+            checkTerms: false,
+            isLoading: false,
             birthDate: '',
           ),
         );
@@ -38,7 +43,8 @@ class AuthFeatureEvents extends StateNotifier<AuthFeatureModel> {
   final Ref ref;
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
-  final TextEditingController repeatPasswordController = TextEditingController();
+  final TextEditingController repeatPasswordController =
+      TextEditingController();
   final TextEditingController firstNameController = TextEditingController();
   final TextEditingController lastNameController = TextEditingController();
   DateTime date = DateTime.now();
@@ -51,6 +57,11 @@ class AuthFeatureEvents extends StateNotifier<AuthFeatureModel> {
     state = state.copyWith(isRepObscure: !state.isRepObscure);
   }
 
+  bool checkTerms() {
+    state = state.copyWith(checkTerms: true);
+    return state.checkTerms;
+  }
+
   Future<void> showSchedule() async {
     DateTime? newDate = await showDatePicker(
         context: rootNavigatorKey.currentContext!,
@@ -60,7 +71,8 @@ class AuthFeatureEvents extends StateNotifier<AuthFeatureModel> {
         builder: ((context, child) {
           return Theme(
               data: Theme.of(context).copyWith(
-                colorScheme: const ColorScheme.light(primary: AppColors.primary),
+                colorScheme:
+                    const ColorScheme.light(primary: AppColors.primary),
                 textButtonTheme: TextButtonThemeData(
                   style: TextButton.styleFrom(
                     foregroundColor: AppColors.primary,
@@ -84,14 +96,21 @@ class AuthFeatureEvents extends StateNotifier<AuthFeatureModel> {
         firstNameController.text.isNotEmpty &&
         lastNameController.text.isNotEmpty &&
         state.birthDate != '') {
-      await registerUser();
+      await goToTermsPage();
     } else {
       Log().error('Debe completar todos los campos');
     }
   }
 
+  Future<void> goToTermsPage() async {
+    await ref.watch(routerProvider).pushNamed(RouterPaths.termsConditions);
+  }
+
   Future<void> registerUser() async {
-    await ref.read(userProvider).register(email: emailController.text, password: passwordController.text);
+    await ref.read(userProvider).register(
+          email: emailController.text,
+          password: passwordController.text,
+        );
     final response = await ref.read(databaseProvider).put(
       path: 'Users',
       queryparameters: {
@@ -100,14 +119,27 @@ class AuthFeatureEvents extends StateNotifier<AuthFeatureModel> {
           'firstName': firstNameController.text,
           'lastName': lastNameController.text,
           'email': emailController.text,
-          'birthDate': state.birthDate,
-          'userImage': 'https://ps.w.org/user-avatar-reloaded/assets/icon-256x256.png?rev=2540745'
+          'birthDate': date,
+          'userImage':
+              'https://ps.w.org/user-avatar-reloaded/assets/icon-256x256.png?rev=2540745',
         },
       },
     );
-    Log().error(response);
+    Log().info(response);
     if (response.isRight) {
-      ref.read(routerProvider).go(RouterPaths.home);
+      ref.read(routerProvider).go(RouterPaths.login);
     }
+  }
+
+  Future<void> login() async {
+    state = state.copyWith(isLoading: true);
+    final response = await ref
+        .read(userProvider)
+        .login(email: emailController.text, password: passwordController.text);
+    response.fold(
+      (left) => Log().error(left.message),
+      (right) => ref.read(routerProvider).go(RouterPaths.home),
+    );
+    state = state.copyWith(isLoading: false);
   }
 }
