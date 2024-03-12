@@ -103,7 +103,7 @@ class LoginViewMobile extends StatelessWidget {
                 ),
                 SizedBox(height: size.height(context, .05)),
                 AppRegularButton(
-                  onTap: () => Log().debug('Google'),
+                  onTap: () async => await notifier.signInWithGoogle(),
                   label: 'Entrar con Google',
                   isActive: true,
                   icon: PhosphorIconsRegular.googleLogo,

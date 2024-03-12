@@ -1,6 +1,8 @@
+import 'package:either_dart/either.dart';
 import 'package:felicitup/core/router/router.dart';
 import 'package:felicitup/core/utils/colors.dart';
 import 'package:felicitup/core/utils/logger.dart';
+import 'package:felicitup/core/utils/utils.dart';
 import 'package:felicitup/infraestructure/providers/auth_provider.dart';
 import 'package:felicitup/infraestructure/providers/database_provider.dart';
 import 'package:flutter/material.dart';
@@ -118,17 +120,19 @@ class AuthFeatureEvents extends StateNotifier<AuthFeatureModel> {
         'body': {
           'firstName': firstNameController.text,
           'lastName': lastNameController.text,
-          'email': emailController.text,
+          'userEmail': emailController.text,
           'birthDate': date,
           'userImage':
               'https://ps.w.org/user-avatar-reloaded/assets/icon-256x256.png?rev=2540745',
+          'felicitups': [{}],
         },
       },
     );
     Log().info(response);
-    if (response.isRight) {
-      ref.read(routerProvider).go(RouterPaths.login);
-    }
+    response.fold(
+      (left) => null,
+      (right) => ref.read(routerProvider).go(RouterPaths.login),
+    );
   }
 
   Future<void> login() async {
@@ -141,5 +145,66 @@ class AuthFeatureEvents extends StateNotifier<AuthFeatureModel> {
       (right) => ref.read(routerProvider).go(RouterPaths.home),
     );
     state = state.copyWith(isLoading: false);
+  }
+
+  Future<void> logOut() async {
+    await ref.read(userProvider).logOut();
+    ref.read(routerProvider).go(RouterPaths.login);
+  }
+
+  Future<void> signInWithGoogle() async {
+    final response = await ref.read(userProvider).signInWithGoogle();
+    response.fold(
+      (left) => Log().error(left.message),
+      (right) async {
+        final check = await checkUserExist(right.user!.email!);
+        if (!check) {
+          final response = await ref.read(databaseProvider).put(
+            path: 'Users',
+            queryparameters: {
+              'doc': right.user!.email!,
+              'body': {
+                'firstName': right.user!.displayName!.split(' ')[0],
+                'lastName': right.user!.displayName!.split(' ')[1],
+                'userEmail': right.user!.email!,
+                'birthDate': right.user!.metadata.creationTime,
+                'userImage':
+                    'https://ps.w.org/user-avatar-reloaded/assets/icon-256x256.png?rev=2540745',
+                'felicitups': [{}],
+              },
+            },
+          );
+          response.fold(
+            (left) => null,
+            (right) => ref.read(routerProvider).go(RouterPaths.home),
+          );
+        } else {
+          ref.read(routerProvider).go(RouterPaths.home);
+        }
+      },
+    );
+  }
+
+  Future<bool> checkUserExist(String email) async {
+    final response = await ref.read(databaseProvider).get(
+      path: 'Users',
+      queryparameters: {
+        'doc': email,
+      },
+    );
+
+    return response.fold(
+      (left) {
+        Log().error(left.message);
+        return false;
+      },
+      (right) {
+        if (right['data'] != null) {
+          return true;
+        } else {
+          return false;
+        }
+      },
+    );
   }
 }
