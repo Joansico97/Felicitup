@@ -42,7 +42,7 @@ class _HomeViewMobileState extends State<HomeViewMobile> {
         child: SafeArea(
           child: Column(
             children: [
-              _Header(state: state, notifier: notifier),
+              const _Header(),
               _pages[state.currentIndex],
             ],
           ),
@@ -194,13 +194,7 @@ class PastView extends StatelessWidget {
 }
 
 class _Header extends StatelessWidget {
-  const _Header({
-    required this.state,
-    required this.notifier,
-  });
-
-  final HomeFeatureModel state;
-  final HomeFeatureEvents notifier;
+  const _Header();
 
   @override
   Widget build(BuildContext context) {
@@ -212,27 +206,6 @@ class _Header extends StatelessWidget {
             Assets.icons.logo,
             height: size.height(context, .05),
           ),
-          SizedBox(height: size.height(context, .02)),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              _HomeHeaderOption(
-                label: 'EN CURSO',
-                isActive: state.listBoolsTap[0],
-                onActive: () => notifier.changeActive(0),
-              ),
-              _HomeHeaderOption(
-                label: 'PRÓXIMOS',
-                isActive: state.listBoolsTap[1],
-                onActive: () => notifier.changeActive(1),
-              ),
-              _HomeHeaderOption(
-                label: 'PASADOS',
-                isActive: state.listBoolsTap[2],
-                onActive: () => notifier.changeActive(2),
-              ),
-            ],
-          )
         ],
       ),
     );
@@ -283,20 +256,46 @@ class PageOne extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final state = ref.watch(homeProvider);
     final notifier = ref.watch(homeProvider.notifier);
-    return Expanded(
-      child: PageView.builder(
-        controller: notifier.pageController,
-        physics: const NeverScrollableScrollPhysics(),
-        itemCount: 3,
-        itemBuilder: (context, index) {
-          return index == 0
-              ? const InProgressView()
-              : index == 1
-                  ? const UpCommingView()
-                  : const PastView();
-        },
-      ),
+    return Column(
+      children: [
+        SizedBox(height: size.height(context, .02)),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: [
+            _HomeHeaderOption(
+              label: 'EN CURSO',
+              isActive: state.listBoolsTap[0],
+              onActive: () => notifier.changeActive(0),
+            ),
+            _HomeHeaderOption(
+              label: 'PRÓXIMOS',
+              isActive: state.listBoolsTap[1],
+              onActive: () => notifier.changeActive(1),
+            ),
+            _HomeHeaderOption(
+              label: 'PASADOS',
+              isActive: state.listBoolsTap[2],
+              onActive: () => notifier.changeActive(2),
+            ),
+          ],
+        ),
+        Expanded(
+          child: PageView.builder(
+            controller: notifier.pageController,
+            physics: const NeverScrollableScrollPhysics(),
+            itemCount: 3,
+            itemBuilder: (context, index) {
+              return index == 0
+                  ? const InProgressView()
+                  : index == 1
+                      ? const UpCommingView()
+                      : const PastView();
+            },
+          ),
+        ),
+      ],
     );
   }
 }

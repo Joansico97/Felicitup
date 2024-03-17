@@ -49,7 +49,18 @@ class LoginViewMobile extends StatelessWidget {
                       ),
                       SizedBox(height: size.height(context, .02)),
                       AppRegularButton(
-                        onTap: () => notifier.login(),
+                        onTap: () async {
+                          final response = await notifier.login();
+                          if (response != '') {
+                            context.mounted
+                                ? ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                      content: Text(response),
+                                    ),
+                                  )
+                                : null;
+                          }
+                        },
                         label: 'Entrar',
                         isActive: true,
                         isLoading: state.isLoading,

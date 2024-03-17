@@ -1,7 +1,6 @@
 import 'package:either_dart/either.dart';
 import 'package:felicitup/core/utils/utils.dart';
 import 'package:felicitup/domain/resources/resources.dart';
-import 'package:felicitup/infraestructure/providers/database_provider.dart';
 import 'package:felicitup/infraestructure/providers/providers.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';

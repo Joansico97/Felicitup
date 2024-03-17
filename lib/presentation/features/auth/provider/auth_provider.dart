@@ -1,7 +1,4 @@
-import 'package:either_dart/either.dart';
 import 'package:felicitup/core/router/router.dart';
-import 'package:felicitup/core/utils/colors.dart';
-import 'package:felicitup/core/utils/logger.dart';
 import 'package:felicitup/core/utils/utils.dart';
 import 'package:felicitup/infraestructure/providers/auth_provider.dart';
 import 'package:felicitup/infraestructure/providers/database_provider.dart';
@@ -108,43 +105,56 @@ class AuthFeatureEvents extends StateNotifier<AuthFeatureModel> {
     await ref.watch(routerProvider).pushNamed(RouterPaths.termsConditions);
   }
 
-  Future<void> registerUser() async {
-    await ref.read(userProvider).register(
+  Future<String> registerUser() async {
+    final register = await ref.read(userProvider).register(
           email: emailController.text,
           password: passwordController.text,
         );
-    final response = await ref.read(databaseProvider).put(
-      path: 'Users',
-      queryparameters: {
-        'doc': emailController.text,
-        'body': {
-          'firstName': firstNameController.text,
-          'lastName': lastNameController.text,
-          'userEmail': emailController.text,
-          'birthDate': date,
-          'userImage':
-              'https://ps.w.org/user-avatar-reloaded/assets/icon-256x256.png?rev=2540745',
-          'felicitups': [{}],
-        },
+    return register.fold(
+      (l) => l.message,
+      (r) async {
+        final response = await ref.read(databaseProvider).put(
+          path: 'Users',
+          queryparameters: {
+            'doc': emailController.text,
+            'body': {
+              'firstName': firstNameController.text,
+              'lastName': lastNameController.text,
+              'userEmail': emailController.text,
+              'birthDate': date,
+              'userImage':
+                  'https://ps.w.org/user-avatar-reloaded/assets/icon-256x256.png?rev=2540745',
+              'felicitups': [{}],
+            },
+          },
+        );
+        Log().info(response);
+        response.fold(
+          (left) => null,
+          (right) => ref.read(routerProvider).go(RouterPaths.login),
+        );
+        return '';
       },
-    );
-    Log().info(response);
-    response.fold(
-      (left) => null,
-      (right) => ref.read(routerProvider).go(RouterPaths.login),
     );
   }
 
-  Future<void> login() async {
+  Future<String> login() async {
     state = state.copyWith(isLoading: true);
-    final response = await ref
-        .read(userProvider)
-        .login(email: emailController.text, password: passwordController.text);
-    response.fold(
-      (left) => Log().error(left.message),
-      (right) => ref.read(routerProvider).go(RouterPaths.home),
-    );
+    final response = await ref.read(userProvider).login(
+          email: emailController.text,
+          password: passwordController.text,
+        );
     state = state.copyWith(isLoading: false);
+    return response.fold(
+      (left) {
+        Log().error(left.message);
+        return left.message;
+      },
+      (right) {
+        ref.read(routerProvider).go(RouterPaths.home);
+        return '';
+      },
+    );
   }
 
   Future<void> logOut() async {
@@ -152,10 +162,10 @@ class AuthFeatureEvents extends StateNotifier<AuthFeatureModel> {
     ref.read(routerProvider).go(RouterPaths.login);
   }
 
-  Future<void> signInWithGoogle() async {
+  Future<String> signInWithGoogle() async {
     final response = await ref.read(userProvider).signInWithGoogle();
     response.fold(
-      (left) => Log().error(left.message),
+      (left) => left.message,
       (right) async {
         final check = await checkUserExist(right.user!.email!);
         if (!check) {
@@ -183,6 +193,7 @@ class AuthFeatureEvents extends StateNotifier<AuthFeatureModel> {
         }
       },
     );
+    return '';
   }
 
   Future<bool> checkUserExist(String email) async {
