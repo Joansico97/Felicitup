@@ -7,7 +7,7 @@ class AppTheme {
   AppTheme({required this.isDarkmode});
 
   ThemeData getTheme() => ThemeData(
-        fontFamily: FontFamily.inter,
+        fontFamily: FontFamily.poppins,
         useMaterial3: true,
         scaffoldBackgroundColor: isDarkmode ? Colors.black : Colors.white,
         brightness: isDarkmode ? Brightness.dark : Brightness.light,

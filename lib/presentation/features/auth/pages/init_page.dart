@@ -3,10 +3,10 @@ import 'package:felicitup/presentation/features/auth/views/views.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class LoginPage extends BasePage {
-  const LoginPage({super.key});
+class InitPage extends BasePage {
+  const InitPage({super.key});
 
   @override
   Widget? mobileBody(BuildContext context, WidgetRef ref) =>
-      LoginViewMobile(ref: ref);
+      InitViewMobile(ref: ref);
 }

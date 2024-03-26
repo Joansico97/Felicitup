@@ -42,17 +42,17 @@ flutter:
   generate: true
 
   assets:
-    # - assets/images/
+    - assets/images/
     - assets/icons/
 
   fonts:
-    - family: Inter
+    - family: Poppins
       fonts:
-        - asset: assets/fonts/Inter-Bold.ttf
+        - asset: assets/fonts/Poppins-Bold.ttf
           weight: 700
-        - asset: assets/fonts/Inter-Medium.ttf
+        - asset: assets/fonts/Poppins-Medium.ttf
           weight: 600
-        - asset: assets/fonts/Inter-Regular.ttf
+        - asset: assets/fonts/Poppins-Regular.ttf
           weight: 500
 
 flutter_intl:

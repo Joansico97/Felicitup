@@ -56,10 +56,9 @@ class UserResourceFirebase implements UserResource {
   Future<Either<ApiException, String>> register(
       {required String email, required String password}) async {
     try {
-      final res = await _ref
+      await _ref
           .read(authFirebaseProvider)
           .createUserWithEmailAndPassword(email: email, password: password);
-      Log().debug(res.credential!.asMap());
       return const Right('');
     } on FirebaseAuthException catch (e) {
       return Left(ApiException(400, e.message!));

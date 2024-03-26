@@ -43,6 +43,7 @@ class _HomeViewMobileState extends State<HomeViewMobile> {
           child: Column(
             children: [
               const _Header(),
+              SizedBox(height: size.height(context, .02)),
               _pages[state.currentIndex],
             ],
           ),
@@ -51,42 +52,42 @@ class _HomeViewMobileState extends State<HomeViewMobile> {
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: state.currentIndex,
         onTap: (index) => notifier.changePage(index),
-        backgroundColor: AppColors.primary,
+        type: BottomNavigationBarType.fixed,
         items: const [
           BottomNavigationBarItem(
             icon: Icon(
               Icons.home,
-              color: AppColors.primary,
+              color: AppColors.red,
             ),
-            label: 'Inicio',
+            label: '',
           ),
           BottomNavigationBarItem(
             icon: Icon(
               Icons.search,
-              color: AppColors.primary,
+              color: AppColors.red,
             ),
-            label: 'Buscar',
+            label: '',
           ),
           BottomNavigationBarItem(
             icon: Icon(
-              Icons.favorite,
-              color: AppColors.primary,
+              Icons.add,
+              color: AppColors.red,
             ),
-            label: 'Favoritos',
+            label: '',
           ),
           BottomNavigationBarItem(
             icon: Icon(
-              Icons.shopping_cart,
-              color: AppColors.primary,
+              Icons.chat,
+              color: AppColors.red,
             ),
-            label: 'Carrito',
+            label: '',
           ),
           BottomNavigationBarItem(
             icon: Icon(
-              Icons.person,
-              color: AppColors.primary,
+              Icons.settings,
+              color: AppColors.red,
             ),
-            label: 'Perfil',
+            label: '',
           ),
         ],
       ),
@@ -130,7 +131,7 @@ class InProgressView extends StatelessWidget {
                       width: size.height(context, .06),
                       decoration: const BoxDecoration(
                         shape: BoxShape.circle,
-                        color: AppColors.primary,
+                        color: AppColors.red,
                       ),
                     ),
                     Container(
@@ -234,7 +235,7 @@ class _HomeHeaderOption extends StatelessWidget {
         decoration: BoxDecoration(
           border: Border(
             bottom: BorderSide(
-              color: isActive ? AppColors.primary : Colors.transparent,
+              color: isActive ? AppColors.red : Colors.transparent,
               width: 3,
             ),
           ),
@@ -242,7 +243,7 @@ class _HomeHeaderOption extends StatelessWidget {
         child: Text(
           label,
           style: AppStyles.bodyS.copyWith(
-            color: AppColors.primary,
+            color: AppColors.red,
             fontWeight: FontWeight.bold,
           ),
         ),
@@ -258,44 +259,47 @@ class PageOne extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final state = ref.watch(homeProvider);
     final notifier = ref.watch(homeProvider.notifier);
-    return Column(
-      children: [
-        SizedBox(height: size.height(context, .02)),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: [
-            _HomeHeaderOption(
-              label: 'EN CURSO',
-              isActive: state.listBoolsTap[0],
-              onActive: () => notifier.changeActive(0),
-            ),
-            _HomeHeaderOption(
-              label: 'PRÓXIMOS',
-              isActive: state.listBoolsTap[1],
-              onActive: () => notifier.changeActive(1),
-            ),
-            _HomeHeaderOption(
-              label: 'PASADOS',
-              isActive: state.listBoolsTap[2],
-              onActive: () => notifier.changeActive(2),
-            ),
-          ],
-        ),
-        Expanded(
-          child: PageView.builder(
-            controller: notifier.pageController,
-            physics: const NeverScrollableScrollPhysics(),
-            itemCount: 3,
-            itemBuilder: (context, index) {
-              return index == 0
-                  ? const InProgressView()
-                  : index == 1
-                      ? const UpCommingView()
-                      : const PastView();
-            },
+    return SizedBox(
+      height: size.height(context, .76),
+      width: size.fullWidth(context),
+      child: Column(
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              _HomeHeaderOption(
+                label: 'EN CURSO',
+                isActive: state.listBoolsTap[0],
+                onActive: () => notifier.changeActive(0),
+              ),
+              _HomeHeaderOption(
+                label: 'PRÓXIMOS',
+                isActive: state.listBoolsTap[1],
+                onActive: () => notifier.changeActive(1),
+              ),
+              _HomeHeaderOption(
+                label: 'PASADOS',
+                isActive: state.listBoolsTap[2],
+                onActive: () => notifier.changeActive(2),
+              ),
+            ],
           ),
-        ),
-      ],
+          Expanded(
+            child: PageView.builder(
+              controller: notifier.pageController,
+              physics: const NeverScrollableScrollPhysics(),
+              itemCount: 3,
+              itemBuilder: (context, index) {
+                return index == 0
+                    ? const InProgressView()
+                    : index == 1
+                        ? const UpCommingView()
+                        : const PastView();
+              },
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

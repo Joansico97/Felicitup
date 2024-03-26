@@ -61,25 +61,37 @@ class AuthFeatureEvents extends StateNotifier<AuthFeatureModel> {
     return state.checkTerms;
   }
 
+  Future<void> goToRegister() async {
+    await ref.watch(routerProvider).pushNamed(RouterPaths.register);
+  }
+
+  Future<void> goToLogin() async {
+    await ref.watch(routerProvider).pushNamed(RouterPaths.login);
+  }
+
   Future<void> showSchedule() async {
     DateTime? newDate = await showDatePicker(
-        context: rootNavigatorKey.currentContext!,
-        initialDate: DateTime.now(),
-        firstDate: DateTime(1900),
-        lastDate: DateTime(2100),
-        builder: ((context, child) {
-          return Theme(
-              data: Theme.of(context).copyWith(
-                colorScheme:
-                    const ColorScheme.light(primary: AppColors.primary),
-                textButtonTheme: TextButtonThemeData(
-                  style: TextButton.styleFrom(
-                    foregroundColor: AppColors.primary,
-                  ),
-                ),
+      context: rootNavigatorKey.currentContext!,
+      initialDate: DateTime.now(),
+      firstDate: DateTime(1900),
+      lastDate: DateTime(2100),
+      builder: ((context, child) {
+        return Theme(
+          data: Theme.of(context).copyWith(
+            colorScheme: const ColorScheme.light(
+              primary: AppColors.lightGrey,
+            ),
+            focusColor: AppColors.red,
+            textButtonTheme: TextButtonThemeData(
+              style: TextButton.styleFrom(
+                foregroundColor: AppColors.red,
               ),
-              child: child!);
-        }));
+            ),
+          ),
+          child: child!,
+        );
+      }),
+    );
 
     if (newDate == null) return;
 
@@ -97,6 +109,16 @@ class AuthFeatureEvents extends StateNotifier<AuthFeatureModel> {
         state.birthDate != '') {
       await goToTermsPage();
     } else {
+      ScaffoldMessenger.of(rootNavigatorKey.currentContext!).showSnackBar(
+        SnackBar(
+          content: Text(
+            'Debe completar todos los campos',
+            style: AppStyles.bodyS.copyWith(
+              color: Colors.white,
+            ),
+          ),
+        ),
+      );
       Log().error('Debe completar todos los campos');
     }
   }
@@ -105,13 +127,25 @@ class AuthFeatureEvents extends StateNotifier<AuthFeatureModel> {
     await ref.watch(routerProvider).pushNamed(RouterPaths.termsConditions);
   }
 
-  Future<String> registerUser() async {
+  Future<void> registerUser() async {
     final register = await ref.read(userProvider).register(
           email: emailController.text,
           password: passwordController.text,
         );
-    return register.fold(
-      (l) => l.message,
+    register.fold(
+      (l) {
+        ScaffoldMessenger.of(rootNavigatorKey.currentContext!).showSnackBar(
+          SnackBar(
+            content: Text(
+              mapError(l.message),
+              style: AppStyles.bodyS.copyWith(
+                color: Colors.white,
+              ),
+            ),
+          ),
+        );
+        Log().error(l.message);
+      },
       (r) async {
         final response = await ref.read(databaseProvider).put(
           path: 'Users',
@@ -130,31 +164,68 @@ class AuthFeatureEvents extends StateNotifier<AuthFeatureModel> {
         );
         Log().info(response);
         response.fold(
-          (left) => null,
-          (right) => ref.read(routerProvider).go(RouterPaths.login),
+          (left) => ScaffoldMessenger.of(rootNavigatorKey.currentContext!)
+              .showSnackBar(
+            SnackBar(
+              content: Text(
+                mapError(left.message),
+                style: AppStyles.bodyS.copyWith(
+                  color: Colors.white,
+                ),
+              ),
+            ),
+          ),
+          (right) {
+            cleanControllers();
+            ref.read(routerProvider).go(RouterPaths.login);
+          },
         );
-        return '';
       },
     );
   }
 
-  Future<String> login() async {
+  Future<void> login() async {
     state = state.copyWith(isLoading: true);
     final response = await ref.read(userProvider).login(
           email: emailController.text,
           password: passwordController.text,
         );
     state = state.copyWith(isLoading: false);
-    return response.fold(
+    response.fold(
       (left) {
+        ScaffoldMessenger.of(rootNavigatorKey.currentContext!).showSnackBar(
+          SnackBar(
+            content: Text(
+              mapError(left.message),
+              style: AppStyles.bodyS,
+            ),
+          ),
+        );
         Log().error(left.message);
-        return left.message;
       },
       (right) {
         ref.read(routerProvider).go(RouterPaths.home);
-        return '';
       },
     );
+  }
+
+  String mapError(String error) {
+    switch (error) {
+      case 'user-not-found':
+        return 'Usuario no encontrado';
+      case 'wrong-password':
+        return 'Contraseña incorrecta';
+      case 'too-many-requests':
+        return 'Demasiados intentos, intente mas tarde';
+      case 'email-already-in-use':
+        return 'El email ya esta en uso';
+      case 'The supplied auth credential is malformed or has expired':
+        return 'Credenciales incorrectas';
+      case 'The email address is already in use by another account.':
+        return 'El email ya esta en uso';
+      default:
+        return 'Error desconocido';
+    }
   }
 
   Future<void> logOut() async {
@@ -217,5 +288,13 @@ class AuthFeatureEvents extends StateNotifier<AuthFeatureModel> {
         }
       },
     );
+  }
+
+  void cleanControllers() {
+    emailController.clear();
+    passwordController.clear();
+    repeatPasswordController.clear();
+    firstNameController.clear();
+    lastNameController.clear();
   }
 }

@@ -12,8 +12,14 @@ final GlobalKey<NavigatorState> rootNavigatorKey = GlobalKey<NavigatorState>();
 
 final _appRouter = GoRouter(
   navigatorKey: rootNavigatorKey,
-  initialLocation: RouterPaths.login,
+  initialLocation: RouterPaths.init,
   routes: [
+    GoRoute(
+      path: RouterPaths.init,
+      name: RouterPaths.init,
+      parentNavigatorKey: rootNavigatorKey,
+      builder: _initHandler,
+    ),
     GoRoute(
       path: RouterPaths.home,
       name: RouterPaths.home,
@@ -37,6 +43,12 @@ final _appRouter = GoRouter(
       name: RouterPaths.termsConditions,
       parentNavigatorKey: rootNavigatorKey,
       builder: _termsConditionsHandler,
+    ),
+    GoRoute(
+      path: RouterPaths.verification,
+      name: RouterPaths.verification,
+      parentNavigatorKey: rootNavigatorKey,
+      builder: _verificationHandler,
     ),
   ],
 );
