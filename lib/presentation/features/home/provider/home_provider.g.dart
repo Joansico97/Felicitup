@@ -14,6 +14,8 @@ _$HomeFeatureModelImpl _$$HomeFeatureModelImplFromJson(
       listBoolsTap: (json['listBoolsTap'] as List<dynamic>)
           .map((e) => e as bool)
           .toList(),
+      currentUser:
+          UserModel.fromJson(json['currentUser'] as Map<String, dynamic>),
     );
 
 Map<String, dynamic> _$$HomeFeatureModelImplToJson(
@@ -22,4 +24,5 @@ Map<String, dynamic> _$$HomeFeatureModelImplToJson(
       'uid': instance.uid,
       'currentIndex': instance.currentIndex,
       'listBoolsTap': instance.listBoolsTap,
+      'currentUser': instance.currentUser,
     };

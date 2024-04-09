@@ -1,61 +1,60 @@
-import 'package:felicitup/domain/models/models.dart';
-
 class UserModel {
-  final String? firstName;
-  final String? lastName;
-  final String? userEmail;
-  final String? userImage;
-  final DateTime? birthDate;
-  final List<FelicitupModel>? felicitups;
+  String? id;
+  String? firstName;
+  String? lastName;
+  String? fullName;
+  String? userImg;
+  String? email;
+  DateTime? birthDate;
 
   UserModel({
+    this.id,
     this.firstName,
     this.lastName,
+    this.fullName,
+    this.userImg,
+    this.email,
     this.birthDate,
-    this.userEmail,
-    this.userImage,
-    this.felicitups,
   });
 
   UserModel copyWith({
+    String? id,
     String? firstName,
     String? lastName,
-    String? userEmail,
-    String? userImage,
+    String? fullName,
+    String? userImg,
+    String? email,
     DateTime? birthDate,
-    List<FelicitupModel>? felicitups,
   }) =>
       UserModel(
+        id: id ?? this.id,
         firstName: firstName ?? this.firstName,
         lastName: lastName ?? this.lastName,
-        userEmail: userEmail ?? this.userEmail,
-        userImage: userImage ?? this.userImage,
+        fullName: fullName ?? this.fullName,
+        userImg: userImg ?? this.userImg,
+        email: email ?? this.email,
         birthDate: birthDate ?? this.birthDate,
-        felicitups: felicitups ?? this.felicitups,
       );
 
   factory UserModel.fromJson(Map<String, dynamic> json) => UserModel(
+        id: json["id"],
         firstName: json["firstName"],
         lastName: json["lastName"],
-        userEmail: json["userEmail"],
-        userImage: json["userImage"],
+        fullName: json["fullName"],
+        userImg: json["userImg"],
+        email: json["email"],
         birthDate: json["birthDate"] == null
             ? null
             : DateTime.parse(json["birthDate"]),
-        felicitups: json["felicitups"] == null
-            ? []
-            : List<FelicitupModel>.from(
-                json["felicitups"]!.map((x) => FelicitupModel.fromJson(x))),
       );
 
   Map<String, dynamic> toJson() => {
+        "id": id,
         "firstName": firstName,
         "lastName": lastName,
-        "userEmail": userEmail,
-        "userImage": userImage,
+        "fullName": fullName,
+        "userImg": userImg,
+        "email": email,
         "birthDate": birthDate?.toIso8601String(),
-        "felicitups": felicitups == null
-            ? []
-            : List<dynamic>.from(felicitups!.map((x) => x.toJson())),
       };
 }

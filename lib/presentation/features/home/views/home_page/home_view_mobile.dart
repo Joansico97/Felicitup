@@ -28,6 +28,9 @@ class _HomeViewMobileState extends State<HomeViewMobile> {
   @override
   void initState() {
     widget.ref.read(homeProvider.notifier).getUid();
+    Future.delayed(const Duration(seconds: 1), () {
+      widget.ref.read(homeProvider.notifier).getUserData();
+    });
     super.initState();
   }
 
@@ -43,7 +46,7 @@ class _HomeViewMobileState extends State<HomeViewMobile> {
           child: Column(
             children: [
               const _Header(),
-              SizedBox(height: size.height(context, .02)),
+              // SizedBox(height: size.height(context, .02)),
               _pages[state.currentIndex],
             ],
           ),
@@ -51,17 +54,20 @@ class _HomeViewMobileState extends State<HomeViewMobile> {
       ),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: state.currentIndex,
-        onTap: (index) => notifier.changePage(index),
+        onTap: (index) async {
+          await notifier.getUserData();
+          notifier.changePage(index);
+        },
         type: BottomNavigationBarType.fixed,
-        items: const [
-          BottomNavigationBarItem(
+        items: [
+          const BottomNavigationBarItem(
             icon: Icon(
               Icons.home,
               color: AppColors.red,
             ),
             label: '',
           ),
-          BottomNavigationBarItem(
+          const BottomNavigationBarItem(
             icon: Icon(
               Icons.search,
               color: AppColors.red,
@@ -69,20 +75,20 @@ class _HomeViewMobileState extends State<HomeViewMobile> {
             label: '',
           ),
           BottomNavigationBarItem(
-            icon: Icon(
-              Icons.add,
-              color: AppColors.red,
+            icon: SvgPicture.asset(
+              Assets.icons.logo,
+              height: size.height(context, .06),
             ),
             label: '',
           ),
-          BottomNavigationBarItem(
+          const BottomNavigationBarItem(
             icon: Icon(
               Icons.chat,
               color: AppColors.red,
             ),
             label: '',
           ),
-          BottomNavigationBarItem(
+          const BottomNavigationBarItem(
             icon: Icon(
               Icons.settings,
               color: AppColors.red,
@@ -107,7 +113,6 @@ class InProgressView extends StatelessWidget {
       child: Column(
         children: [
           Container(
-            // height: size.height(context, .12),
             width: size.width(context, .8),
             padding: size.all(context, .02),
             decoration: BoxDecoration(
@@ -199,13 +204,60 @@ class _Header extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
+    return Container(
       width: size.fullWidth(context),
-      child: Column(
+      padding: size.horizontal(context, .07),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          SvgPicture.asset(
-            Assets.icons.logo,
-            height: size.height(context, .05),
+          Consumer(builder: (BuildContext context, WidgetRef ref, _) {
+            final state = ref.watch(homeProvider);
+            return Container(
+              height: size.height(context, .06),
+              width: size.height(context, .06),
+              decoration: const BoxDecoration(
+                shape: BoxShape.circle,
+                color: AppColors.red,
+              ),
+              child: state.currentUser.userImg != null
+                  ? Image.network(state.currentUser.userImg!)
+                  : null,
+            );
+          }),
+          const Spacer(),
+          Container(
+            width: size.width(context, .5),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(
+                  size.width(context, .1),
+                ),
+                topRight: Radius.circular(
+                  size.width(context, .1),
+                ),
+              ),
+              color: const Color(0xFFF4F2F2),
+            ),
+            child: Column(
+              children: [
+                SizedBox(
+                  height: size.height(context, .03),
+                ),
+                Image.asset(
+                  Assets.images.logoLetter.path,
+                  height: size.height(context, .045),
+                ),
+              ],
+            ),
+          ),
+          const Spacer(),
+          IconButton(
+            onPressed: () {},
+            icon: Icon(
+              Icons.notifications,
+              color: AppColors.red,
+              size: size.height(context, .045),
+            ),
           ),
         ],
       ),
@@ -218,32 +270,35 @@ class _HomeHeaderOption extends StatelessWidget {
     required this.label,
     required this.isActive,
     required this.onActive,
+    required this.activeColor,
+    required this.textColor,
   });
 
   final String label;
   final bool isActive;
   final VoidCallback onActive;
+  final Color activeColor;
+  final Color textColor;
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: onActive,
       child: Container(
-        height: size.height(context, .06),
-        width: size.width(context, .25),
+        height: size.height(context, .04),
+        width: size.width(context, .3),
         alignment: Alignment.center,
         decoration: BoxDecoration(
-          border: Border(
-            bottom: BorderSide(
-              color: isActive ? AppColors.red : Colors.transparent,
-              width: 3,
-            ),
+          borderRadius: size.borderRadius(context, .02),
+          color: isActive ? activeColor : Colors.white,
+          border: Border.all(
+            color: isActive ? activeColor : textColor,
           ),
         ),
         child: Text(
           label,
-          style: AppStyles.bodyS.copyWith(
-            color: AppColors.red,
+          style: AppStyles.bodyXS.copyWith(
+            color: isActive ? Colors.white : textColor,
             fontWeight: FontWeight.bold,
           ),
         ),
@@ -259,46 +314,54 @@ class PageOne extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final state = ref.watch(homeProvider);
     final notifier = ref.watch(homeProvider.notifier);
-    return SizedBox(
-      height: size.height(context, .76),
-      width: size.fullWidth(context),
-      child: Column(
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              _HomeHeaderOption(
-                label: 'EN CURSO',
-                isActive: state.listBoolsTap[0],
-                onActive: () => notifier.changeActive(0),
-              ),
-              _HomeHeaderOption(
-                label: 'PRÓXIMOS',
-                isActive: state.listBoolsTap[1],
-                onActive: () => notifier.changeActive(1),
-              ),
-              _HomeHeaderOption(
-                label: 'PASADOS',
-                isActive: state.listBoolsTap[2],
-                onActive: () => notifier.changeActive(2),
-              ),
-            ],
-          ),
-          Expanded(
-            child: PageView.builder(
-              controller: notifier.pageController,
-              physics: const NeverScrollableScrollPhysics(),
-              itemCount: 3,
-              itemBuilder: (context, index) {
-                return index == 0
-                    ? const InProgressView()
-                    : index == 1
-                        ? const UpCommingView()
-                        : const PastView();
-              },
+    return Expanded(
+      child: Container(
+        color: const Color(0xFFF4F2F2),
+        child: Column(
+          children: [
+            SizedBox(height: size.height(context, .05)),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                _HomeHeaderOption(
+                  label: 'EN CURSO',
+                  isActive: state.listBoolsTap[0],
+                  textColor: AppColors.lightBlue,
+                  activeColor: AppColors.lightBlue,
+                  onActive: () => notifier.changeActive(0),
+                ),
+                _HomeHeaderOption(
+                  label: 'PRÓXIMOS',
+                  isActive: state.listBoolsTap[1],
+                  textColor: AppColors.orange,
+                  activeColor: AppColors.orange,
+                  onActive: () => notifier.changeActive(1),
+                ),
+                _HomeHeaderOption(
+                  label: 'PASADOS',
+                  isActive: state.listBoolsTap[2],
+                  textColor: const Color(0xFF8E8E8E),
+                  activeColor: const Color(0xFF8E8E8E),
+                  onActive: () => notifier.changeActive(2),
+                ),
+              ],
             ),
-          ),
-        ],
+            Expanded(
+              child: PageView.builder(
+                controller: notifier.pageController,
+                physics: const NeverScrollableScrollPhysics(),
+                itemCount: 3,
+                itemBuilder: (context, index) {
+                  return index == 0
+                      ? const InProgressView()
+                      : index == 1
+                          ? const UpCommingView()
+                          : const PastView();
+                },
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

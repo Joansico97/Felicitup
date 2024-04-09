@@ -1,6 +1,8 @@
 import 'package:either_dart/either.dart';
 import 'package:felicitup/core/utils/utils.dart';
+import 'package:felicitup/domain/models/models.dart';
 import 'package:felicitup/domain/resources/resources.dart';
+import 'package:felicitup/infraestructure/providers/database_provider.dart';
 import 'package:felicitup/infraestructure/providers/providers.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -68,10 +70,39 @@ class UserResourceFirebase implements UserResource {
   }
 
   @override
-  Future<Either<ApiException, Map<String, dynamic>>> getUserData(
+  Future<Either<ApiException, UserModel>> getUserData(
       {required String idToken}) async {
-    Log().debug('traigo la info');
-    return const Right({});
+    try {
+      final response = await _ref
+          .read(databaseProvider)
+          .get(collection: 'Users', document: idToken);
+      return response.fold(
+        (l) => Left(l),
+        (r) {
+          print(r);
+          return Right(
+            UserModel.fromJson(r),
+          );
+        },
+      );
+      // final response = await _ref.read(databaseProvider).get(
+      //   path: 'Users',
+      //   queryparameters: {
+      //     'doc': idToken,
+      //   },
+      // );
+      // return response.fold(
+      //   (l) => Left(l),
+      //   (r) {
+      //     print(r);
+      //     return Right(
+      //       UserModel.fromJson(r),
+      //     );
+      //   },
+      // );
+    } catch (e) {
+      return Left(ApiException(400, e.toString()));
+    }
   }
 
   @override

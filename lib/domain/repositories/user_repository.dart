@@ -1,5 +1,6 @@
 import 'package:either_dart/either.dart';
 import 'package:felicitup/core/utils/utils.dart';
+import 'package:felicitup/domain/models/models.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 abstract class UserRepository {
@@ -13,7 +14,7 @@ abstract class UserRepository {
     required String password,
   });
   Future<Either<ApiException, void>> logOut();
-  Future<Either<ApiException, Map<String, dynamic>>> getUserData({
+  Future<Either<ApiException, UserModel>> getUserData({
     required String idToken,
   });
   Future<Either<ApiException, UserCredential>> signInWithGoogle();

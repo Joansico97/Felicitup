@@ -7,13 +7,19 @@ class DatabaseRepositoryImpl implements DatabaseRepository {
   DatabaseRepositoryImpl(this._databaseResource);
 
   final DatabaseResource _databaseResource;
+
   @override
   Future<Either<ApiException, Map<String, dynamic>>> get(
-          {required String path, Map<String, dynamic>? queryparameters, Map<String, dynamic>? headers}) async =>
-      _databaseResource.get(path: path, queryparameters: queryparameters, headers: headers);
+      {required String collection, required String document}) async {
+    return _databaseResource.get(collection: collection, document: document);
+  }
 
   @override
   Future<Either<ApiException, String>> put(
-          {required String path, Map<String, dynamic>? queryparameters, Map<String, dynamic>? headers}) async =>
-      _databaseResource.put(path: path, queryparameters: queryparameters, headers: headers);
+      {required String collection,
+      required String document,
+      required Map<String, dynamic> data}) async {
+    return _databaseResource.put(
+        collection: collection, document: document, data: data);
+  }
 }

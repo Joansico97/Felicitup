@@ -24,6 +24,7 @@ mixin _$AuthFeatureModel {
   bool get isRepObscure => throw _privateConstructorUsedError;
   bool get checkTerms => throw _privateConstructorUsedError;
   bool get isLoading => throw _privateConstructorUsedError;
+  bool get isValidate => throw _privateConstructorUsedError;
   String get birthDate => throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -43,6 +44,7 @@ abstract class $AuthFeatureModelCopyWith<$Res> {
       bool isRepObscure,
       bool checkTerms,
       bool isLoading,
+      bool isValidate,
       String birthDate});
 }
 
@@ -63,6 +65,7 @@ class _$AuthFeatureModelCopyWithImpl<$Res, $Val extends AuthFeatureModel>
     Object? isRepObscure = null,
     Object? checkTerms = null,
     Object? isLoading = null,
+    Object? isValidate = null,
     Object? birthDate = null,
   }) {
     return _then(_value.copyWith(
@@ -81,6 +84,10 @@ class _$AuthFeatureModelCopyWithImpl<$Res, $Val extends AuthFeatureModel>
       isLoading: null == isLoading
           ? _value.isLoading
           : isLoading // ignore: cast_nullable_to_non_nullable
+              as bool,
+      isValidate: null == isValidate
+          ? _value.isValidate
+          : isValidate // ignore: cast_nullable_to_non_nullable
               as bool,
       birthDate: null == birthDate
           ? _value.birthDate
@@ -103,6 +110,7 @@ abstract class _$$AuthFeatureModelImplCopyWith<$Res>
       bool isRepObscure,
       bool checkTerms,
       bool isLoading,
+      bool isValidate,
       String birthDate});
 }
 
@@ -121,6 +129,7 @@ class __$$AuthFeatureModelImplCopyWithImpl<$Res>
     Object? isRepObscure = null,
     Object? checkTerms = null,
     Object? isLoading = null,
+    Object? isValidate = null,
     Object? birthDate = null,
   }) {
     return _then(_$AuthFeatureModelImpl(
@@ -140,6 +149,10 @@ class __$$AuthFeatureModelImplCopyWithImpl<$Res>
           ? _value.isLoading
           : isLoading // ignore: cast_nullable_to_non_nullable
               as bool,
+      isValidate: null == isValidate
+          ? _value.isValidate
+          : isValidate // ignore: cast_nullable_to_non_nullable
+              as bool,
       birthDate: null == birthDate
           ? _value.birthDate
           : birthDate // ignore: cast_nullable_to_non_nullable
@@ -156,6 +169,7 @@ class _$AuthFeatureModelImpl implements _AuthFeatureModel {
       required this.isRepObscure,
       required this.checkTerms,
       required this.isLoading,
+      required this.isValidate,
       required this.birthDate});
 
   factory _$AuthFeatureModelImpl.fromJson(Map<String, dynamic> json) =>
@@ -170,11 +184,13 @@ class _$AuthFeatureModelImpl implements _AuthFeatureModel {
   @override
   final bool isLoading;
   @override
+  final bool isValidate;
+  @override
   final String birthDate;
 
   @override
   String toString() {
-    return 'AuthFeatureModel(isObscure: $isObscure, isRepObscure: $isRepObscure, checkTerms: $checkTerms, isLoading: $isLoading, birthDate: $birthDate)';
+    return 'AuthFeatureModel(isObscure: $isObscure, isRepObscure: $isRepObscure, checkTerms: $checkTerms, isLoading: $isLoading, isValidate: $isValidate, birthDate: $birthDate)';
   }
 
   @override
@@ -190,14 +206,16 @@ class _$AuthFeatureModelImpl implements _AuthFeatureModel {
                 other.checkTerms == checkTerms) &&
             (identical(other.isLoading, isLoading) ||
                 other.isLoading == isLoading) &&
+            (identical(other.isValidate, isValidate) ||
+                other.isValidate == isValidate) &&
             (identical(other.birthDate, birthDate) ||
                 other.birthDate == birthDate));
   }
 
   @JsonKey(ignore: true)
   @override
-  int get hashCode => Object.hash(
-      runtimeType, isObscure, isRepObscure, checkTerms, isLoading, birthDate);
+  int get hashCode => Object.hash(runtimeType, isObscure, isRepObscure,
+      checkTerms, isLoading, isValidate, birthDate);
 
   @JsonKey(ignore: true)
   @override
@@ -220,6 +238,7 @@ abstract class _AuthFeatureModel implements AuthFeatureModel {
       required final bool isRepObscure,
       required final bool checkTerms,
       required final bool isLoading,
+      required final bool isValidate,
       required final String birthDate}) = _$AuthFeatureModelImpl;
 
   factory _AuthFeatureModel.fromJson(Map<String, dynamic> json) =
@@ -233,6 +252,8 @@ abstract class _AuthFeatureModel implements AuthFeatureModel {
   bool get checkTerms;
   @override
   bool get isLoading;
+  @override
+  bool get isValidate;
   @override
   String get birthDate;
   @override

@@ -23,6 +23,7 @@ mixin _$HomeFeatureModel {
   String get uid => throw _privateConstructorUsedError;
   int get currentIndex => throw _privateConstructorUsedError;
   List<bool> get listBoolsTap => throw _privateConstructorUsedError;
+  UserModel get currentUser => throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
   @JsonKey(ignore: true)
@@ -36,7 +37,11 @@ abstract class $HomeFeatureModelCopyWith<$Res> {
           HomeFeatureModel value, $Res Function(HomeFeatureModel) then) =
       _$HomeFeatureModelCopyWithImpl<$Res, HomeFeatureModel>;
   @useResult
-  $Res call({String uid, int currentIndex, List<bool> listBoolsTap});
+  $Res call(
+      {String uid,
+      int currentIndex,
+      List<bool> listBoolsTap,
+      UserModel currentUser});
 }
 
 /// @nodoc
@@ -55,6 +60,7 @@ class _$HomeFeatureModelCopyWithImpl<$Res, $Val extends HomeFeatureModel>
     Object? uid = null,
     Object? currentIndex = null,
     Object? listBoolsTap = null,
+    Object? currentUser = null,
   }) {
     return _then(_value.copyWith(
       uid: null == uid
@@ -69,6 +75,10 @@ class _$HomeFeatureModelCopyWithImpl<$Res, $Val extends HomeFeatureModel>
           ? _value.listBoolsTap
           : listBoolsTap // ignore: cast_nullable_to_non_nullable
               as List<bool>,
+      currentUser: null == currentUser
+          ? _value.currentUser
+          : currentUser // ignore: cast_nullable_to_non_nullable
+              as UserModel,
     ) as $Val);
   }
 }
@@ -81,7 +91,11 @@ abstract class _$$HomeFeatureModelImplCopyWith<$Res>
       __$$HomeFeatureModelImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({String uid, int currentIndex, List<bool> listBoolsTap});
+  $Res call(
+      {String uid,
+      int currentIndex,
+      List<bool> listBoolsTap,
+      UserModel currentUser});
 }
 
 /// @nodoc
@@ -98,6 +112,7 @@ class __$$HomeFeatureModelImplCopyWithImpl<$Res>
     Object? uid = null,
     Object? currentIndex = null,
     Object? listBoolsTap = null,
+    Object? currentUser = null,
   }) {
     return _then(_$HomeFeatureModelImpl(
       uid: null == uid
@@ -112,6 +127,10 @@ class __$$HomeFeatureModelImplCopyWithImpl<$Res>
           ? _value._listBoolsTap
           : listBoolsTap // ignore: cast_nullable_to_non_nullable
               as List<bool>,
+      currentUser: null == currentUser
+          ? _value.currentUser
+          : currentUser // ignore: cast_nullable_to_non_nullable
+              as UserModel,
     ));
   }
 }
@@ -122,7 +141,8 @@ class _$HomeFeatureModelImpl implements _HomeFeatureModel {
   const _$HomeFeatureModelImpl(
       {required this.uid,
       required this.currentIndex,
-      required final List<bool> listBoolsTap})
+      required final List<bool> listBoolsTap,
+      required this.currentUser})
       : _listBoolsTap = listBoolsTap;
 
   factory _$HomeFeatureModelImpl.fromJson(Map<String, dynamic> json) =>
@@ -141,8 +161,11 @@ class _$HomeFeatureModelImpl implements _HomeFeatureModel {
   }
 
   @override
+  final UserModel currentUser;
+
+  @override
   String toString() {
-    return 'HomeFeatureModel(uid: $uid, currentIndex: $currentIndex, listBoolsTap: $listBoolsTap)';
+    return 'HomeFeatureModel(uid: $uid, currentIndex: $currentIndex, listBoolsTap: $listBoolsTap, currentUser: $currentUser)';
   }
 
   @override
@@ -154,13 +177,15 @@ class _$HomeFeatureModelImpl implements _HomeFeatureModel {
             (identical(other.currentIndex, currentIndex) ||
                 other.currentIndex == currentIndex) &&
             const DeepCollectionEquality()
-                .equals(other._listBoolsTap, _listBoolsTap));
+                .equals(other._listBoolsTap, _listBoolsTap) &&
+            (identical(other.currentUser, currentUser) ||
+                other.currentUser == currentUser));
   }
 
   @JsonKey(ignore: true)
   @override
   int get hashCode => Object.hash(runtimeType, uid, currentIndex,
-      const DeepCollectionEquality().hash(_listBoolsTap));
+      const DeepCollectionEquality().hash(_listBoolsTap), currentUser);
 
   @JsonKey(ignore: true)
   @override
@@ -181,7 +206,8 @@ abstract class _HomeFeatureModel implements HomeFeatureModel {
   const factory _HomeFeatureModel(
       {required final String uid,
       required final int currentIndex,
-      required final List<bool> listBoolsTap}) = _$HomeFeatureModelImpl;
+      required final List<bool> listBoolsTap,
+      required final UserModel currentUser}) = _$HomeFeatureModelImpl;
 
   factory _HomeFeatureModel.fromJson(Map<String, dynamic> json) =
       _$HomeFeatureModelImpl.fromJson;
@@ -192,6 +218,8 @@ abstract class _HomeFeatureModel implements HomeFeatureModel {
   int get currentIndex;
   @override
   List<bool> get listBoolsTap;
+  @override
+  UserModel get currentUser;
   @override
   @JsonKey(ignore: true)
   _$$HomeFeatureModelImplCopyWith<_$HomeFeatureModelImpl> get copyWith =>

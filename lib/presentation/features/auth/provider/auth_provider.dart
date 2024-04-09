@@ -2,6 +2,7 @@ import 'package:felicitup/core/router/router.dart';
 import 'package:felicitup/core/utils/utils.dart';
 import 'package:felicitup/infraestructure/providers/auth_provider.dart';
 import 'package:felicitup/infraestructure/providers/database_provider.dart';
+import 'package:felicitup/infraestructure/providers/firebase_providers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
@@ -20,6 +21,7 @@ class AuthFeatureModel with _$AuthFeatureModel {
     required bool isRepObscure,
     required bool checkTerms,
     required bool isLoading,
+    required bool isValidate,
     required String birthDate,
   }) = _AuthFeatureModel;
 
@@ -35,6 +37,7 @@ class AuthFeatureEvents extends StateNotifier<AuthFeatureModel> {
             isRepObscure: true,
             checkTerms: false,
             isLoading: false,
+            isValidate: false,
             birthDate: '',
           ),
         );
@@ -46,6 +49,7 @@ class AuthFeatureEvents extends StateNotifier<AuthFeatureModel> {
       TextEditingController();
   final TextEditingController firstNameController = TextEditingController();
   final TextEditingController lastNameController = TextEditingController();
+  final TextEditingController phoneController = TextEditingController();
   DateTime date = DateTime.now();
 
   void changeObscure() {
@@ -67,6 +71,10 @@ class AuthFeatureEvents extends StateNotifier<AuthFeatureModel> {
 
   Future<void> goToLogin() async {
     await ref.watch(routerProvider).pushNamed(RouterPaths.login);
+  }
+
+  void changeView() {
+    state = state.copyWith(isValidate: true);
   }
 
   Future<void> showSchedule() async {
@@ -123,6 +131,16 @@ class AuthFeatureEvents extends StateNotifier<AuthFeatureModel> {
     }
   }
 
+  Future<void> validatePhone() async {
+    // ToDo: 'Implementar validacion de telefono';
+    state = state.copyWith(isValidate: false);
+    await ref.read(routerProvider).pushReplacementNamed(RouterPaths.login);
+  }
+
+  void setPhoneNumber(String phone) {
+    phoneController.text = phone;
+  }
+
   Future<void> goToTermsPage() async {
     await ref.watch(routerProvider).pushNamed(RouterPaths.termsConditions);
   }
@@ -147,18 +165,23 @@ class AuthFeatureEvents extends StateNotifier<AuthFeatureModel> {
         Log().error(l.message);
       },
       (r) async {
+        final collRef = ref.read(firestoreProvider).collection('Users');
+        final docId = collRef.doc();
         final response = await ref.read(databaseProvider).put(
-          path: 'Users',
-          queryparameters: {
-            'doc': emailController.text,
+          collection: 'Users',
+          document: docId.id,
+          data: {
+            'doc': docId.id,
             'body': {
-              'firstName': firstNameController.text,
-              'lastName': lastNameController.text,
-              'userEmail': emailController.text,
-              'birthDate': date,
-              'userImage':
-                  'https://ps.w.org/user-avatar-reloaded/assets/icon-256x256.png?rev=2540745',
-              'felicitups': [{}],
+              "id": docId.id,
+              "firstName": firstNameController.text,
+              "lastName": lastNameController.text,
+              "fullName":
+                  '${firstNameController.text} ${lastNameController.text}',
+              "userImg":
+                  "https://ps.w.org/user-avatar-reloaded/assets/icon-256x256.png?rev=2540745",
+              "email": emailController.text,
+              "birthDate": date,
             },
           },
         );
@@ -177,7 +200,7 @@ class AuthFeatureEvents extends StateNotifier<AuthFeatureModel> {
           ),
           (right) {
             cleanControllers();
-            ref.read(routerProvider).go(RouterPaths.login);
+            ref.read(routerProvider).go(RouterPaths.verification);
           },
         );
       },
@@ -197,7 +220,9 @@ class AuthFeatureEvents extends StateNotifier<AuthFeatureModel> {
           SnackBar(
             content: Text(
               mapError(left.message),
-              style: AppStyles.bodyS,
+              style: AppStyles.bodyS.copyWith(
+                color: Colors.white,
+              ),
             ),
           ),
         );
@@ -240,9 +265,12 @@ class AuthFeatureEvents extends StateNotifier<AuthFeatureModel> {
       (right) async {
         final check = await checkUserExist(right.user!.email!);
         if (!check) {
+          final collRef = ref.read(firestoreProvider).collection('Users');
+          final docId = collRef.doc();
           final response = await ref.read(databaseProvider).put(
-            path: 'Users',
-            queryparameters: {
+            collection: 'Users',
+            document: docId.id,
+            data: {
               'doc': right.user!.email!,
               'body': {
                 'firstName': right.user!.displayName!.split(' ')[0],
@@ -269,11 +297,9 @@ class AuthFeatureEvents extends StateNotifier<AuthFeatureModel> {
 
   Future<bool> checkUserExist(String email) async {
     final response = await ref.read(databaseProvider).get(
-      path: 'Users',
-      queryparameters: {
-        'doc': email,
-      },
-    );
+          collection: 'Users',
+          document: '',
+        );
 
     return response.fold(
       (left) {

@@ -9,24 +9,20 @@ class DatabaseResourceFirebase implements DatabaseResource {
   DatabaseResourceFirebase(this._ref);
   final Ref _ref;
   @override
-  Future<Either<ApiException, Map<String, dynamic>>> get(
-      {required String path, Map<String, dynamic>? queryparameters, Map<String, dynamic>? headers}) async {
+  Future<Either<ApiException, Map<String, dynamic>>> get({
+    required String collection,
+    required String document,
+  }) async {
     try {
-      if (queryparameters != null) {
-        final data = await _ref.read(firestoreProvider).collection(path).doc(queryparameters['doc']).get();
-        if (data.data() != null) {
-          return Right(data.data()!);
-        } else {
-          return const Right({});
-        }
+      final data = await _ref
+          .read(firestoreProvider)
+          .collection(collection)
+          .doc(document)
+          .get();
+      if (data.data() != null) {
+        return Right(data.data()!);
       } else {
-        final data = await _ref.read(firestoreProvider).collection(path).get();
-        if (data.docs.isNotEmpty) {
-          final dataReturn = data.docs.map((e) => e.data()).toList();
-          return Right({'data': dataReturn});
-        } else {
-          return const Right({});
-        }
+        return const Right({});
       }
     } on FirebaseException catch (e) {
       Log().error(e.message!);
@@ -38,10 +34,17 @@ class DatabaseResourceFirebase implements DatabaseResource {
   }
 
   @override
-  Future<Either<ApiException, String>> put(
-      {required String path, Map<String, dynamic>? queryparameters, Map<String, dynamic>? headers}) async {
+  Future<Either<ApiException, String>> put({
+    required String collection,
+    required String document,
+    required Map<String, dynamic> data,
+  }) async {
     try {
-      await _ref.read(firestoreProvider).collection(path).doc(queryparameters!['doc']).set(queryparameters['body']);
+      await _ref
+          .read(firestoreProvider)
+          .collection(collection)
+          .doc(document)
+          .set(data);
       return const Right('');
     } on FirebaseException catch (e) {
       Log().error(e.message!);

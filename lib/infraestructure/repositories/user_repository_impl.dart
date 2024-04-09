@@ -1,5 +1,6 @@
 import 'package:either_dart/either.dart';
 import 'package:felicitup/core/utils/utils.dart';
+import 'package:felicitup/domain/models/models.dart';
 import 'package:felicitup/domain/repositories/repositories.dart';
 import 'package:felicitup/domain/resources/resources.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -24,7 +25,7 @@ class UserRepositoryImpl implements UserRepository {
       _userResource.register(email: email, password: password);
 
   @override
-  Future<Either<ApiException, Map<String, dynamic>>> getUserData(
+  Future<Either<ApiException, UserModel>> getUserData(
           {required String idToken}) =>
       _userResource.getUserData(idToken: idToken);
 

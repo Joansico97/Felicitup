@@ -1,4 +1,6 @@
 import 'package:felicitup/core/router/router.dart';
+import 'package:felicitup/core/utils/utils.dart';
+import 'package:felicitup/domain/models/models.dart';
 import 'package:felicitup/infraestructure/providers/auth_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -17,6 +19,7 @@ class HomeFeatureModel with _$HomeFeatureModel {
     required String uid,
     required int currentIndex,
     required List<bool> listBoolsTap,
+    required UserModel currentUser,
   }) = _HomeFeatureModel;
 
   factory HomeFeatureModel.fromJson(Map<String, dynamic> json) =>
@@ -26,7 +29,7 @@ class HomeFeatureModel with _$HomeFeatureModel {
 class HomeFeatureEvents extends StateNotifier<HomeFeatureModel> {
   HomeFeatureEvents(this.ref)
       : super(
-          const HomeFeatureModel(
+          HomeFeatureModel(
             uid: '',
             currentIndex: 0,
             listBoolsTap: [
@@ -34,6 +37,7 @@ class HomeFeatureEvents extends StateNotifier<HomeFeatureModel> {
               false,
               false,
             ],
+            currentUser: UserModel.fromJson({}),
           ),
         );
 
@@ -62,5 +66,17 @@ class HomeFeatureEvents extends StateNotifier<HomeFeatureModel> {
 
   void changePage(int index) {
     state = state.copyWith(currentIndex: index);
+  }
+
+  Future<void> getUserData() async {
+    final user = await ref.read(userProvider).getUserData(idToken: state.uid);
+    Log().debug(user.right.toJson());
+    user.fold(
+      (left) => '',
+      (right) {
+        Log().debug(right);
+        state = state.copyWith(currentUser: right);
+      },
+    );
   }
 }
